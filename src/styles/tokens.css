@@ -1,0 +1,42 @@
+:root {
+  /* Color tokens — each text/background pairing below is ≥4.5:1 contrast. */
+  --color-page-bg: #f4f4f5;
+  --color-surface-bg: #ffffff;
+  --color-text: #18181b;
+
+  --color-display-bg: #18181b;
+  --color-display-text: #ffffff;
+  --color-error-text: #fca5a5;
+
+  --color-digit-bg: #e4e4e7;
+  --color-digit-bg-hover: #d4d4d8;
+  --color-digit-text: #18181b;
+
+  --color-operator-bg: #c2410c;
+  --color-operator-bg-hover: #9a3412;
+  --color-operator-text: #ffffff;
+
+  --color-action-bg: #52525b;
+  --color-action-bg-hover: #3f3f46;
+  --color-action-text: #ffffff;
+
+  --color-equals-bg: #1d4ed8;
+  --color-equals-bg-hover: #1e40af;
+  --color-equals-text: #ffffff;
+
+  --color-focus-ring: #2563eb;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+
+  /* Typography scale */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-size-display: clamp(2rem, 10vw, 3rem);
+  --font-size-button: clamp(1.125rem, 5vw, 1.5rem);
+
+  --radius: 0.75rem;
+}

@@ -1,2 +1,23 @@
-
 .claude/
+
+# Node / Vite
+node_modules/
+dist/
+dist-ssr/
+build/
+*.local
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Env
+.env
+.env.*
+
+# Editor/OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp

@@ -63,7 +63,7 @@ Derived directly from the spec's Functional Requirements and Edge Cases:
 |---|---|---|
 | Initial / any settled state | Digit / decimal pressed | Appends to `currentEntry` (or replaces it if `overwriteOnNextDigit` is true), clears `overwriteOnNextDigit`. |
 | Settled state with a value | Operator pressed | If `pendingOperator` already set and no new digits typed, replaces it (newest wins). Otherwise evaluates any pending operation against `currentEntry`, stores result as `previousOperand`, sets `pendingOperator`, sets `overwriteOnNextDigit: true`. |
-| Operand entered, operator pending | Percent pressed | Computes `previousOperand * (currentEntry / 100)` and writes the rounded result into `currentEntry`; with no `pendingOperator`, divides `currentEntry` by 100 in place (FR-003). |
+| Operand entered, operator pending | Percent pressed | Computes the effective second operand as `previousOperand * (currentEntry / 100)`, applies `pendingOperator` between `previousOperand` and that effective operand (e.g., 200 + (200×10/100) = 220), rounds, writes the result into `currentEntry`, and clears `pendingOperator`/`previousOperand` (mirrors equals); with no `pendingOperator`, simply divides `currentEntry` by 100 in place (FR-003). |
 | Any state | Sign-toggle pressed | Flips the numeric sign of `currentEntry` in place; no effect on `pendingOperator`/`previousOperand`. |
 | Mid-entry | Clear-entry (CE) pressed | Resets `currentEntry` to `"0"`; `previousOperand` and `pendingOperator` are preserved. |
 | Any state | Clear-all (AC) pressed | Resets to Initial state exactly. |
