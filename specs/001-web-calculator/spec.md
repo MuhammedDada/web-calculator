@@ -8,6 +8,18 @@
 
 **Input**: User description: "Build a web calculator. A user opens the page and can perform everyday arithmetic: addition, subtraction, multiplication, division, and percentages. They can clear the current entry, clear everything, and delete the last digit. They can use the on-screen buttons or their keyboard. It must not crash or show nonsense when the user does something odd. It must look considered and consistent, and it must work on a phone."
 
+## Clarifications
+
+### Session 2026-08-13
+
+- Q: Should the calculator let users enter a negative number directly, via a sign-toggle key, or should negative values only ever arise as the result of an operation? → A: Include a sign-toggle ("+/-") so users can flip the current entry's sign directly
+- Q: When a calculation finishes and the user presses equals again with no new input, should the calculator repeat the last operation, or just do nothing? → A: Pressing "=" again with no new input does nothing (no-op)
+- Q: Displayed results need a concrete precision limit so behavior is testable — how many significant digits should the calculator show before rounding a result? → A: Up to 10 significant digits
+- Q: After the calculator shows the divide-by-zero error, what dismisses it and lets the user start a new calculation — any key press at all, or only the "clear all" (AC) button? → A: Any key press (digit, operator, or clear) dismisses the error and starts a fresh entry
+- Q: What should the "%" key actually compute — a percentage of the other number in a pending calculation, or should it always just divide the current entry by 100? → A: Percent of the previous/stored operand when a calculation is pending; divide by 100 when standalone
+- Q: What's the full keyboard-to-action mapping — specifically, does Enter mean "="? → A: Digits 0-9 and "." enter directly; +, -, *, / are the four operators; % is percent; Enter and "=" both trigger equals; Backspace deletes the last digit; Delete is Clear Entry (CE); Escape is Clear All (AC); F9 toggles sign (+/-)
+- Q: When an operator is pressed twice in a row, or a second decimal point is typed into the same number, should the calculator apply the newest keystroke in both cases, or always keep the first? → A: Newest operator replaces the previous one; extra decimal-point keystrokes are ignored (confirms existing asymmetric rule is intentional)
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Perform a basic calculation (Priority: P1)
@@ -33,6 +45,8 @@ such as "12 + 7", click equals, and confirm the correct result (19) is displayed
    addition, subtraction, multiplication, or division.
 4. **Given** a result is displayed, **When** the user presses an operator immediately after,
    **Then** the calculator uses that result as the starting value of the next calculation.
+5. **Given** the user has entered a number, **When** the user presses the sign-toggle,
+   **Then** the number's sign is flipped (positive becomes negative and vice versa).
 
 ---
 
@@ -112,21 +126,26 @@ adding 10% of 200 (i.e., 220); enter "50 %" alone and confirm it shows 0.5.
 
 ### Edge Cases
 
-- Dividing by zero MUST show a clear, recoverable error state (e.g., "Error") instead of
-  crashing, freezing, or displaying "Infinity" or "NaN".
+- Dividing by zero MUST show a clear error state (e.g., "Error") instead of crashing,
+  freezing, or displaying "Infinity" or "NaN". Any subsequent key press (a digit, an
+  operator, or clear) MUST dismiss the error and start a fresh entry — the user is never
+  stuck needing a specific key to recover.
 - Pressing equals with no second number entered (e.g., "7 +" then equals) MUST NOT crash;
   the calculator treats the missing operand safely (e.g., no-op or reuses the first number).
 - Pressing an operator twice in a row (e.g., "7 + -") MUST NOT crash; the calculator uses the
   most recently pressed operator.
-- Entering more than one decimal point in the same number (e.g., "1.2.3") MUST be prevented
-  or ignored so the display never shows a malformed number.
+- Entering more than one decimal point in the same number (e.g., "1.2.3") MUST have no
+  effect on the extra keystrokes — the first decimal point wins and the display never shows
+  a malformed number.
 - Pressing delete when the current entry is already empty/zero MUST be a no-op, not an error.
 - Pressing percent with no number entered MUST NOT crash.
 - Entering a number long enough to overflow the display MUST be handled gracefully (e.g.,
   truncated or shown in a shortened notation) rather than breaking the layout or crashing.
 - Rapid repeated key presses or button clicks MUST NOT cause duplicate or lost input.
-- Result values with long decimal expansions (e.g., 1 ÷ 3) MUST be rounded for display rather
-  than shown with unbounded precision.
+- Result values with long decimal expansions (e.g., 1 ÷ 3) MUST be rounded to at most 10
+  significant digits for display rather than shown with unbounded precision.
+- Pressing equals again immediately after a result is already displayed, with no new number or
+  operator entered, MUST be a no-op; the calculator does not repeat the last operation.
 
 ## Requirements *(mandatory)*
 
@@ -135,7 +154,10 @@ adding 10% of 200 (i.e., 220); enter "50 %" alone and confirm it shows 0.5.
 - **FR-001**: System MUST allow users to enter digits 0-9 and a decimal point.
 - **FR-002**: System MUST allow users to perform addition, subtraction, multiplication, and
   division on entered numbers.
-- **FR-003**: System MUST allow users to compute a percentage via a dedicated percent action.
+- **FR-003**: System MUST allow users to compute a percentage via a dedicated percent action:
+  when a calculation is pending, percent MUST compute that percentage of the stored/previous
+  operand (e.g., "200 + 10%" = 220); with no pending operation, percent MUST divide the
+  current entry by 100.
 - **FR-004**: System MUST allow users to clear only the current entry ("CE") while preserving
   any pending operation and stored value.
 - **FR-005**: System MUST allow users to clear the entire calculation ("AC"/"C") and return to
@@ -143,11 +165,23 @@ adding 10% of 200 (i.e., 220); enter "50 %" alone and confirm it shows 0.5.
 - **FR-006**: System MUST allow users to delete the last digit of the current entry.
 - **FR-007**: System MUST let a displayed result be used as the starting value for a
   subsequent calculation (chaining).
-- **FR-008**: System MUST support performing every on-screen action (digits, operators,
-  percent, clear entry, clear all, delete, equals) via an equivalent keyboard key.
+- **FR-008**: System MUST support performing every on-screen action via an equivalent
+  keyboard key, per the following mapping:
+
+  | Action | Key(s) |
+  |--------|--------|
+  | Digits 0-9 / decimal point | `0`-`9`, `.` |
+  | Add / subtract / multiply / divide | `+`, `-`, `*`, `/` |
+  | Percent | `%` |
+  | Equals | `Enter` or `=` |
+  | Delete last digit | `Backspace` |
+  | Clear entry (CE) | `Delete` |
+  | Clear all (AC) | `Escape` |
+  | Sign toggle (+/-) | `F9` |
 - **FR-009**: System MUST always display the current entry or result in a readable form.
-- **FR-010**: System MUST handle division by zero by presenting a clear, recoverable error
-  state rather than crashing or displaying a raw technical value.
+- **FR-010**: System MUST handle division by zero by presenting a clear error state rather
+  than crashing or displaying a raw technical value, and MUST let any subsequent key press
+  (digit, operator, or clear) dismiss the error and resume normal entry.
 - **FR-011**: System MUST handle out-of-sequence or malformed input (repeated operators,
   multiple decimal points, premature equals, empty-entry actions) without crashing or
   producing a nonsensical or malformed display.
@@ -155,8 +189,10 @@ adding 10% of 200 (i.e., 220); enter "50 %" alone and confirm it shows 0.5.
   typography, and button styling across every control.
 - **FR-013**: System MUST remain fully usable, legible, and free of layout breakage on
   phone-sized screens.
-- **FR-014**: System MUST round displayed results to a fixed, reasonable number of significant
-  digits rather than showing unbounded decimal precision.
+- **FR-014**: System MUST round displayed results to at most 10 significant digits rather than
+  showing unbounded decimal precision.
+- **FR-015**: System MUST allow users to toggle the sign (positive/negative) of the current
+  entry via a dedicated sign-toggle control, available both on-screen and via keyboard.
 
 ### Key Entities
 
@@ -183,11 +219,6 @@ adding 10% of 200 (i.e., 220); enter "50 %" alone and confirm it shows 0.5.
 
 ## Assumptions
 
-- Percentage behaves the same as in common calculator apps: with a pending operation, "%"
-  computes that percentage of the stored value (e.g., 200 + 10% = 220); with no pending
-  operation, "%" divides the current entry by 100.
-- Displayed numbers are rounded to a fixed number of significant digits (consistent with
-  typical calculator apps); the exact digit count is a design detail left to implementation.
 - No calculation history or memory functions (M+, M-, MR) are required — only the current
   entry and one pending operation need to be tracked.
 - The calculator is a single-page, single-user experience with no accounts, persistence
