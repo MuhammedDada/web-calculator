@@ -130,8 +130,9 @@ adding 10% of 200 (i.e., 220); enter "50 %" alone and confirm it shows 0.5.
   freezing, or displaying "Infinity" or "NaN". Any subsequent key press (a digit, an
   operator, or clear) MUST dismiss the error and start a fresh entry — the user is never
   stuck needing a specific key to recover.
-- Pressing equals with no second number entered (e.g., "7 +" then equals) MUST NOT crash;
-  the calculator treats the missing operand safely (e.g., no-op or reuses the first number).
+- Pressing equals with no second number entered (e.g., "7 +" then equals) MUST be a no-op:
+  the calculator does not crash and does not evaluate anything — the display and pending
+  operator remain exactly as they were until the user types a second operand.
 - Pressing an operator twice in a row (e.g., "7 + -") MUST NOT crash; the calculator uses the
   most recently pressed operator.
 - Entering more than one decimal point in the same number (e.g., "1.2.3") MUST have no

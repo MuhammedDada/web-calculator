@@ -56,6 +56,7 @@ malformed-input and error-recovery cases (FR-011, FR-010).
 - **Postconditions**:
   - Referentially new object; `state` itself is never mutated.
   - `currentEntry` is always a non-empty numeric string (or the error text when `isError`).
+  - `currentEntry` never exceeds 12 characters (the length cap defined in `data-model.md`).
   - Any numeric result placed into `currentEntry` has already been passed through
     `format.ts`'s rounding (≤10 significant digits) — callers never re-round.
 

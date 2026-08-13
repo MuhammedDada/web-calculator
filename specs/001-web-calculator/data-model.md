@@ -53,6 +53,9 @@ Derived directly from the spec's Functional Requirements and Edge Cases:
   not an error (spec Edge Cases).
 - Pressing percent or an operator with no digits ever entered MUST NOT throw — it is treated
   as an operation on the current default value (`"0"`) (spec Edge Cases).
+- Pressing `=` while `pendingOperator` is set and no digit has been typed since (i.e.,
+  `overwriteOnNextDigit` is still `true`) MUST be a no-op — state is left exactly as-is
+  (clarified: premature equals does not crash and does not evaluate).
 
 ## State transitions
 
@@ -65,6 +68,7 @@ Derived directly from the spec's Functional Requirements and Edge Cases:
 | Mid-entry | Clear-entry (CE) pressed | Resets `currentEntry` to `"0"`; `previousOperand` and `pendingOperator` are preserved. |
 | Any state | Clear-all (AC) pressed | Resets to Initial state exactly. |
 | `currentEntry` non-empty | Delete pressed | Removes the last character of `currentEntry`; if that empties it, `currentEntry` becomes `"0"`. No-op if already `"0"`. |
+| Operand + operator entered, no second operand typed yet (`overwriteOnNextDigit: true`) | Equals pressed | No-op — state is left completely unchanged (clarified: premature equals). |
 | Operand + operator + operand entered | Equals pressed | Evaluates `previousOperand <pendingOperator> currentEntry`, rounds to ≤10 significant digits, writes result into `currentEntry`, clears `pendingOperator`/`previousOperand`, sets `justEvaluated: true`. |
 | `justEvaluated: true` | Equals pressed again, no new input | No-op (clarified). |
 | Any state | Division by zero evaluated | `isError: true`; `currentEntry` shows the error text. |

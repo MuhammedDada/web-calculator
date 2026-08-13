@@ -103,8 +103,8 @@ zero shows a recoverable error instead of crashing.
       `tests/unit/domain/operators.test.ts`.
 - [ ] T012 [P] [US1] Unit test equals evaluation for all four operators, result rounding, that
       pressing equals again with no new input is a no-op (no repeated operation), and that
-      pressing equals with no second operand ever entered (e.g., "7 +" then "=") does not
-      crash and safely no-ops/reuses the first operand per spec Edge Cases, in
+      pressing equals with no second operand ever entered (e.g., "7 +" then "=") is a strict
+      no-op — state is left completely unchanged — per spec Edge Cases, in
       `tests/unit/domain/equals.test.ts`.
 - [ ] T013 [P] [US1] Unit test that dividing by zero sets an error state (not a crash, not
       `Infinity`/`NaN`), and that any subsequent action (digit, operator, or clear) clears the
@@ -126,8 +126,9 @@ zero shows a recoverable error instead of crashing.
 - [ ] T019 [US1] Implement operator-selection and chaining reducer cases in
       `src/domain/calculator.ts` to pass T011 (depends on T011, T018).
 - [ ] T020 [US1] Implement the equals reducer case (using `formatResult`), the
-      no-repeat-equals no-op, and the premature-equals safe handling, in
-      `src/domain/calculator.ts` to pass T012 (depends on T012, T017, T019).
+      no-repeat-equals no-op, and the premature-equals no-op (state left unchanged when `=`
+      is pressed with no second operand entered), in `src/domain/calculator.ts` to pass T012
+      (depends on T012, T017, T019).
 - [ ] T021 [US1] Implement the divide-by-zero error state and any-key recovery in
       `src/domain/calculator.ts` to pass T013 (depends on T013, T020).
 - [ ] T022 [US1] Implement the sign-toggle reducer case in `src/domain/calculator.ts` to pass
