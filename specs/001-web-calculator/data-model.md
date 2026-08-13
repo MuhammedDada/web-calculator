@@ -33,6 +33,9 @@ Derived directly from the spec's Functional Requirements and Edge Cases:
 - `currentEntry` MUST contain at most one decimal point (`.`). A second decimal-point
   keystroke on the same entry is a no-op — first one wins (FR-011, clarified asymmetric
   rule).
+- `currentEntry` MUST NOT grow beyond 12 characters (accounting for an optional leading `-`
+  and one `.`); digit/decimal-point presses beyond that length are ignored rather than
+  appended (spec Edge Cases: "entering a number long enough to overflow the display").
 - Selecting a new operator while `pendingOperator` is already set (with no second operand
   digits typed yet) REPLACES `pendingOperator` with the newest choice — newest wins (FR-011,
   clarified asymmetric rule).

@@ -160,7 +160,7 @@ adding 10% of 200 (i.e., 220); enter "50 %" alone and confirm it shows 0.5.
   current entry by 100.
 - **FR-004**: System MUST allow users to clear only the current entry ("CE") while preserving
   any pending operation and stored value.
-- **FR-005**: System MUST allow users to clear the entire calculation ("AC"/"C") and return to
+- **FR-005**: System MUST allow users to clear the entire calculation ("AC") and return to
   the initial state.
 - **FR-006**: System MUST allow users to delete the last digit of the current entry.
 - **FR-007**: System MUST let a displayed result be used as the starting value for a

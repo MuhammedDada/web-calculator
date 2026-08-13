@@ -37,11 +37,13 @@ Single frontend project at the repository root (no backend): `src/domain/`, `src
       per `plan.md`'s Project Structure: `package.json`, `tsconfig.json` (`strict: true`),
       `vite.config.ts`, `index.html`, `src/main.tsx`, and empty `src/domain/`, `src/ui/`,
       `src/styles/`, `tests/unit/domain/`, `tests/component/` directories, with `dev` and
-      `build` npm scripts.
+      `build` npm scripts. Record the dependency rationale from `research.md` in the commit
+      message (Constitution Principle I).
 - [ ] T002 Configure Vitest in `vite.config.ts` (or a `vitest.workspace.ts`) with two test
       projects: a `node` environment covering `tests/unit/**` and a `jsdom` environment
       covering `tests/component/**`; install `vitest`, `@testing-library/react`, and
-      `@testing-library/user-event`; add a `test` npm script.
+      `@testing-library/user-event`; add a `test` npm script. Record the dependency rationale
+      from `research.md` in the commit message (Constitution Principle I).
 
 ---
 
@@ -52,13 +54,16 @@ Single frontend project at the repository root (no backend): `src/domain/`, `src
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
 - [ ] T003 Define `Operator`, `CalculatorAction`, and `CalculatorState` types in
-      `src/domain/calculator.types.ts`, matching `contracts/domain-engine.md` exactly.
-- [ ] T004 [P] Implement `createInitialState()` and a pass-through `reduce()` stub (returns
-      the input state unchanged for every action) in `src/domain/calculator.ts`, establishing
-      the module's public shape ahead of story-specific branches.
-- [ ] T005 [P] Implement `formatResult(value: number): string` skeleton in
-      `src/domain/format.ts` (signature only, per `contracts/domain-engine.md`); the rounding
-      body is filled in by User Story 1.
+      `src/domain/calculator.types.ts`, matching `contracts/domain-engine.md` exactly. (Type
+      declarations only — no runtime behavior, so Constitution Principle III's test-first rule
+      does not apply to this task.)
+- [ ] T004 [P] Unit test that `createInitialState()` returns the documented Initial state
+      (`currentEntry: "0"`, `previousOperand: null`, `pendingOperator: null`,
+      `overwriteOnNextDigit: true`, `isError: false`, `justEvaluated: false`), in
+      `tests/unit/domain/initial-state.test.ts`.
+- [ ] T005 Implement `createInitialState()` and a pass-through `reduce()` stub (returns the
+      input state unchanged for every action) in `src/domain/calculator.ts`, to pass T004
+      (depends on T003, T004).
 - [ ] T006 [P] Create presentational `Button`, `Display`, and `Keypad` components (props-only,
       no dispatch wiring yet) in `src/ui/Button.tsx`, `src/ui/Display.tsx`,
       `src/ui/Keypad.tsx`.
@@ -67,7 +72,7 @@ Single frontend project at the repository root (no backend): `src/domain/`, `src
       `src/styles/tokens.css` and `src/styles/global.css` (Constitution Principle IV).
 - [ ] T008 Wire `src/ui/App.tsx` and `src/main.tsx` to render `Keypad` + `Display` via
       `useReducer(reduce, undefined, createInitialState)`, rendering the static initial `"0"`
-      (depends on T004, T006, T007).
+      (depends on T005, T006, T007).
 - [ ] T009 [P] Create `CHANGELOG.md` at the repository root with an `## Unreleased` heading
       ready to receive entries (Constitution Principle V).
 
@@ -90,13 +95,16 @@ zero shows a recoverable error instead of crashing.
 > Write these first; confirm each one FAILS before starting the matching implementation task.
 
 - [ ] T010 [P] [US1] Unit test digit and decimal-point entry — append to `currentEntry`,
-      overwrite-on-next-digit after an operator/equals, and duplicate-decimal-point guard (first
-      wins) — in `tests/unit/domain/entry.test.ts`.
+      overwrite-on-next-digit after an operator/equals, duplicate-decimal-point guard (first
+      wins), and that `currentEntry` never grows beyond a 12-character cap (extra digit
+      presses beyond that are ignored) — in `tests/unit/domain/entry.test.ts`.
 - [ ] T011 [P] [US1] Unit test operator selection: chaining a displayed result into the next
       calculation, and newest-operator-wins when an operator is pressed twice in a row, in
       `tests/unit/domain/operators.test.ts`.
-- [ ] T012 [P] [US1] Unit test equals evaluation for all four operators, result rounding, and
-      that pressing equals again with no new input is a no-op (no repeated operation), in
+- [ ] T012 [P] [US1] Unit test equals evaluation for all four operators, result rounding, that
+      pressing equals again with no new input is a no-op (no repeated operation), and that
+      pressing equals with no second operand ever entered (e.g., "7 +" then "=") does not
+      crash and safely no-ops/reuses the first operand per spec Edge Cases, in
       `tests/unit/domain/equals.test.ts`.
 - [ ] T013 [P] [US1] Unit test that dividing by zero sets an error state (not a crash, not
       `Infinity`/`NaN`), and that any subsequent action (digit, operator, or clear) clears the
@@ -106,19 +114,20 @@ zero shows a recoverable error instead of crashing.
 - [ ] T015 [P] [US1] Unit test `formatResult` rounds to at most 10 significant digits with no
       floating-point artifacts (e.g., `1/3`, `0.1 + 0.2`), in `tests/unit/domain/format.test.ts`.
 - [ ] T016 [P] [US1] Component test: clicking on-screen buttons for "12 + 7 =" shows "19" and
-      chaining "+  3 =" shows "22", in `tests/component/basic-calculation.test.tsx`.
+      chaining "+ 3 =" shows "22"; also assert the display is never blank/undefined at any
+      point in the flow (FR-009), in `tests/component/basic-calculation.test.tsx`.
 
 ### Implementation for User Story 1
 
-- [ ] T017 [US1] Implement the `formatResult` rounding body in `src/domain/format.ts` to pass
-      T015 (depends on T015).
-- [ ] T018 [US1] Implement digit and decimal-point reducer cases in `src/domain/calculator.ts`
-      to pass T010 (depends on T010).
+- [ ] T017 [US1] Implement `formatResult(value: number): string` in `src/domain/format.ts` to
+      pass T015 (depends on T015).
+- [ ] T018 [US1] Implement digit and decimal-point reducer cases in `src/domain/calculator.ts`,
+      including the 12-character `currentEntry` length cap, to pass T010 (depends on T010).
 - [ ] T019 [US1] Implement operator-selection and chaining reducer cases in
       `src/domain/calculator.ts` to pass T011 (depends on T011, T018).
-- [ ] T020 [US1] Implement the equals reducer case (using `formatResult`) and the
-      no-repeat-equals no-op in `src/domain/calculator.ts` to pass T012 (depends on T012, T017,
-      T019).
+- [ ] T020 [US1] Implement the equals reducer case (using `formatResult`), the
+      no-repeat-equals no-op, and the premature-equals safe handling, in
+      `src/domain/calculator.ts` to pass T012 (depends on T012, T017, T019).
 - [ ] T021 [US1] Implement the divide-by-zero error state and any-key recovery in
       `src/domain/calculator.ts` to pass T013 (depends on T013, T020).
 - [ ] T022 [US1] Implement the sign-toggle reducer case in `src/domain/calculator.ts` to pass
@@ -127,8 +136,11 @@ zero shows a recoverable error instead of crashing.
       `src/ui/Keypad.tsx` and `src/ui/Calculator.tsx` to `dispatch` the corresponding actions,
       and render `state.currentEntry` (with an error style) in `src/ui/Display.tsx` (depends on
       T021, T022, T016).
-- [ ] T024 [US1] Append a `CHANGELOG.md` entry describing basic calculation, chaining,
-      sign-toggle, and divide-by-zero behavior (depends on T023).
+- [ ] T024 [US1] Confirm keyboard operability, focus visibility, and ≥4.5:1 contrast for all
+      User Story 1 controls (digits, operators, equals, sign-toggle) before merge, per
+      Constitution Principle IV (depends on T023).
+- [ ] T025 [US1] Append a `CHANGELOG.md` entry describing basic calculation, chaining,
+      sign-toggle, and divide-by-zero behavior (depends on T024).
 
 **Checkpoint**: User Story 1 is fully functional and independently testable via on-screen
 buttons.
@@ -145,28 +157,31 @@ confirm entry resets to "0" while "50 +" is preserved; press AC, confirm full re
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T025 [P] [US2] Unit test delete removes the last character of `currentEntry` and is a
+- [ ] T026 [P] [US2] Unit test delete removes the last character of `currentEntry` and is a
       no-op when it is already `"0"`, in `tests/unit/domain/delete.test.ts`.
-- [ ] T026 [P] [US2] Unit test clear-entry resets only `currentEntry` to `"0"`, preserving
+- [ ] T027 [P] [US2] Unit test clear-entry resets only `currentEntry` to `"0"`, preserving
       `pendingOperator`/`previousOperand`, in `tests/unit/domain/clear-entry.test.ts`.
-- [ ] T027 [P] [US2] Unit test clear-all resets state to exactly the Initial state, in
+- [ ] T028 [P] [US2] Unit test clear-all resets state to exactly the Initial state, in
       `tests/unit/domain/clear-all.test.ts`.
-- [ ] T028 [P] [US2] Component test: on-screen delete/CE/AC buttons match spec User Story 2's
+- [ ] T029 [P] [US2] Component test: on-screen delete/CE/AC buttons match spec User Story 2's
       four acceptance scenarios, in `tests/component/correct-mistake.test.tsx`.
 
 ### Implementation for User Story 2
 
-- [ ] T029 [US2] Implement the delete reducer case in `src/domain/calculator.ts` to pass T025
-      (depends on T025).
-- [ ] T030 [US2] Implement the clear-entry reducer case in `src/domain/calculator.ts` to pass
-      T026 (depends on T026, T029).
-- [ ] T031 [US2] Implement the clear-all reducer case in `src/domain/calculator.ts` to pass
+- [ ] T030 [US2] Implement the delete reducer case in `src/domain/calculator.ts` to pass T026
+      (depends on T026).
+- [ ] T031 [US2] Implement the clear-entry reducer case in `src/domain/calculator.ts` to pass
       T027 (depends on T027, T030).
-- [ ] T032 [US2] Wire delete, clear-entry, and clear-all on-screen buttons in
+- [ ] T032 [US2] Implement the clear-all reducer case in `src/domain/calculator.ts` to pass
+      T028 (depends on T028, T031).
+- [ ] T033 [US2] Wire delete, clear-entry, and clear-all on-screen buttons in
       `src/ui/Keypad.tsx` and `src/ui/Calculator.tsx` to dispatch the corresponding actions
-      (depends on T031, T028).
-- [ ] T033 [US2] Append a `CHANGELOG.md` entry describing delete/clear-entry/clear-all
-      behavior (depends on T032).
+      (depends on T032, T029).
+- [ ] T034 [US2] Confirm keyboard operability, focus visibility, and ≥4.5:1 contrast for all
+      User Story 2 controls (delete, CE, AC) before merge, per Constitution Principle IV
+      (depends on T033).
+- [ ] T035 [US2] Append a `CHANGELOG.md` entry describing delete/clear-entry/clear-all
+      behavior (depends on T034).
 
 **Checkpoint**: User Stories 1 and 2 both work independently via on-screen buttons.
 
@@ -183,20 +198,23 @@ equivalent mouse-driven interaction.
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T034 [P] [US3] Component test: every key in `contracts/keyboard-mapping.md` (digits,
+- [ ] T036 [P] [US3] Component test: every key in `contracts/keyboard-mapping.md` (digits,
       `.`, `+-*/`, `%`, `Enter`/`=`, `Backspace`, `Delete`, `Escape`, `F9`) triggers its mapped
       action end-to-end, and an unmapped key (e.g., `a`) has no effect, in
       `tests/component/keyboard-mapping.test.tsx`.
 
 ### Implementation for User Story 3
 
-- [ ] T035 [US3] Implement the `useKeyboard` hook mapping `keydown` events to
+- [ ] T037 [US3] Implement the `useKeyboard` hook mapping `keydown` events to
       `CalculatorAction` dispatches per `contracts/keyboard-mapping.md`, ignoring unmapped
-      keys, in `src/ui/useKeyboard.ts` (depends on T034).
-- [ ] T036 [US3] Attach the `useKeyboard` hook in `src/ui/Calculator.tsx` (listener attached
-      while the calculator is mounted, removed on unmount) (depends on T035).
-- [ ] T037 [US3] Append a `CHANGELOG.md` entry describing full keyboard parity (depends on
-      T036).
+      keys, in `src/ui/useKeyboard.ts` (depends on T036).
+- [ ] T038 [US3] Attach the `useKeyboard` hook in `src/ui/Calculator.tsx` (listener attached
+      while the calculator is mounted, removed on unmount) (depends on T037).
+- [ ] T039 [US3] Confirm keyboard operability, focus visibility, and ≥4.5:1 contrast are
+      unaffected by the keyboard listener (e.g., it does not trap `Tab` focus) before merge,
+      per Constitution Principle IV (depends on T038).
+- [ ] T040 [US3] Append a `CHANGELOG.md` entry describing full keyboard parity (depends on
+      T039).
 
 **Checkpoint**: User Stories 1, 2, and 3 all work independently.
 
@@ -211,21 +229,23 @@ pending, divide-by-100 when standalone.
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T038 [P] [US4] Unit test percent computes the percentage of `previousOperand` when
+- [ ] T041 [P] [US4] Unit test percent computes the percentage of `previousOperand` when
       `pendingOperator` is set, divides `currentEntry` by 100 when standalone, and does not
       crash when no number has been entered, in `tests/unit/domain/percent.test.ts`.
-- [ ] T039 [P] [US4] Component test: on-screen percent button reproduces spec User Story 4's
+- [ ] T042 [P] [US4] Component test: on-screen percent button reproduces spec User Story 4's
       two acceptance scenarios, in `tests/component/percentage.test.tsx`.
 
 ### Implementation for User Story 4
 
-- [ ] T040 [US4] Implement the percent reducer case in `src/domain/calculator.ts` to pass T038
-      (depends on T038).
-- [ ] T041 [US4] Wire the on-screen percent button in `src/ui/Keypad.tsx` (the keyboard `%`
+- [ ] T043 [US4] Implement the percent reducer case, using `formatResult` for the computed
+      result, in `src/domain/calculator.ts` to pass T041 (depends on T041).
+- [ ] T044 [US4] Wire the on-screen percent button in `src/ui/Keypad.tsx` (the keyboard `%`
       key already dispatches via User Story 3's hook — no keyboard change needed) (depends on
-      T040, T039).
-- [ ] T042 [US4] Append a `CHANGELOG.md` entry describing percentage behavior (depends on
-      T041).
+      T043, T042).
+- [ ] T045 [US4] Confirm keyboard operability, focus visibility, and ≥4.5:1 contrast for the
+      percent control before merge, per Constitution Principle IV (depends on T044).
+- [ ] T046 [US4] Append a `CHANGELOG.md` entry describing percentage behavior (depends on
+      T045).
 
 **Checkpoint**: All four user stories are independently functional.
 
@@ -235,13 +255,15 @@ pending, divide-by-100 when standalone.
 
 **Purpose**: Verification that spans every story
 
-- [ ] T043 [P] Responsive/accessibility audit: confirm no clipped or overlapping controls at
-      375px width, every control has a visible `:focus-visible` outline and an accessible
-      name, and the token palette holds ≥4.5:1 contrast; adjust `src/styles/tokens.css` /
-      `src/styles/global.css` as needed.
-- [ ] T044 Walk through all 9 scenarios in `quickstart.md` against `npm run dev` and record
-      the results.
-- [ ] T045 Verify `npm run build` completes with zero TypeScript errors and `npm run test`
+- [ ] T047 [P] Final responsive/accessibility audit across all four stories: confirm no
+      clipped or overlapping controls at 375px width, every control has a visible
+      `:focus-visible` outline and an accessible name, and the token palette holds ≥4.5:1
+      contrast; adjust `src/styles/tokens.css` / `src/styles/global.css` as needed. (This is a
+      holistic pass on top of the per-story checks in T024/T034/T039/T045.)
+- [ ] T048 Walk through all 9 scenarios in `quickstart.md` against `npm run dev` and record
+      the results, including a quick rapid-keypress check (mashing a digit or operator in
+      quick succession) to confirm no duplicate or lost input.
+- [ ] T049 Verify `npm run build` completes with zero TypeScript errors and `npm run test`
       passes with every suite green.
 
 ---
@@ -270,15 +292,16 @@ pending, divide-by-100 when standalone.
   so — despite being independent user-story slices — they run sequentially, not in parallel,
   within and across US1/US2/US4.
 - UI wiring tasks depend on their story's reducer cases being implemented.
-- Each story's `CHANGELOG.md` task is last in its phase (Constitution Principle V).
+- Each story phase ends with an accessibility/keyboard/contrast confirmation task, followed by
+  that story's `CHANGELOG.md` entry (Constitution Principles IV and V).
 
 ### Parallel Opportunities
 
-- Foundational: T004, T005, T006, T007, T009 can run in parallel once T003 is done (distinct
-  files).
+- Foundational: T004, T006, T007, T009 can run in parallel once T003 is done (distinct files;
+  T005 is not parallel since it directly depends on T004).
 - US1 tests: T010-T016 (7 files) can all be written in parallel.
-- US2 tests: T025-T028 (4 files) can all be written in parallel.
-- US4 tests: T038-T039 (2 files) can be written in parallel.
+- US2 tests: T026-T029 (4 files) can all be written in parallel.
+- US4 tests: T041-T042 (2 files) can be written in parallel.
 - Different user stories' *test-writing* tasks could proceed in parallel across stories if
   staffed, but their *implementation* tasks share `src/domain/calculator.ts` and must be
   serialized in story-priority order (P1 → P2 → P3 → P4) regardless of staffing.
@@ -330,6 +353,11 @@ checkpoints.
   sequence.
 - `[US#]` maps every story-phase task back to its spec.md user story for traceability.
 - All `src/domain/` implementation tasks follow Red-Green-Refactor: the matching test must be
-  written and observed failing first (Constitution Principle III, NON-NEGOTIABLE).
+  written and observed failing first (Constitution Principle III, NON-NEGOTIABLE) — this
+  includes the Foundational `createInitialState()`/`reduce()` stub (T004 before T005), not
+  just the story phases.
+- Each story phase's accessibility/keyboard/contrast check (e.g., T024, T034, T039, T045)
+  satisfies the constitution's "before merge" requirement per story, rather than deferring
+  that gate to the single end-of-project audit (T047).
 - Commit after each task or logical group; each user-story `CHANGELOG.md` task should land in
   the same commit as (or immediately after) that story's implementation.
