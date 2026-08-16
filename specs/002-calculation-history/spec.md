@@ -14,6 +14,9 @@
 
 - Q: When a user selects a history entry, should the calculator load only the numeric result, or restore the full original expression for re-editing? → A: Load only the result (e.g., "19") as the fresh current entry
 - Q: Should the history panel be visible by default on a small screen, or hidden until opened on demand? → A: Hidden by default, opened via a toggle control
+- Q: Does the calculation history survive a page reload, and if the calculator is open in two browser tabs at once, do they share history or keep separate ones? → A: History resets on page reload; each browser tab has its own independent, unshared history
+- Q: Should a divide-by-zero (or any errored) calculation actually be recorded in history at all? → A: Errored calculations are never added to history (confirms existing FR-008/Edge Cases text)
+- Q: When the history panel is open on a 375px-wide screen, exactly where does it sit relative to the keypad? → A: History panel replaces the keypad in place while open (display and toggle remain visible); closing it restores the keypad
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -41,8 +44,9 @@ most-recent first.
    completes one more calculation, **Then** the oldest entry is dropped and the new one
    appears at the top.
 5. **Given** the history panel is closed (the default state), **When** the user activates the
-   history toggle, **Then** the panel opens without shrinking, clipping, or displacing the
-   primary keypad controls; activating the toggle again closes it.
+   history toggle, **Then** the panel replaces the keypad in the same screen space (the
+   display and toggle remain visible) rather than compressing or overlapping it; activating
+   the toggle again restores the keypad.
 
 ---
 
@@ -122,14 +126,19 @@ the list is empty afterward.
 - **FR-009**: System MUST NOT record the act of selecting/reusing a history entry as a new
   history entry.
 - **FR-010**: History MUST be hidden by default and only shown when the user opens it via a
-  toggle control, so it never obscures or crowds out the primary calculator controls on a
-  small screen.
+  toggle control. When open, the history panel MUST replace the keypad in the same screen
+  space — the display and the toggle control remain visible throughout — rather than
+  compressing, overlapping, or sharing space with the keypad; closing the panel restores the
+  keypad.
 - **FR-011**: Selecting a history entry MUST load only its numeric result into the calculator
   as the current entry — the same way a freshly completed calculation would appear — without
   restoring the original expression's operator or operands.
 - **FR-012**: Clearing history MUST NOT affect any calculation currently in progress on the
   main display.
 - **FR-013**: System MUST provide a toggle control to open and close the history panel.
+- **FR-014**: System MUST NOT persist history across a page reload, and MUST NOT share
+  history between separate browser tabs or windows — each is independent and starts empty on
+  load.
 
 ### Key Entities
 
@@ -154,9 +163,8 @@ the list is empty afterward.
 
 ## Assumptions
 
-- History is kept in memory for the current browser session only; it is not persisted across
-  page reloads or stored on any server, consistent with the base calculator's no-backend,
-  no-accounts scope.
+- History is kept in memory for the current page load only (per FR-014), consistent with the
+  base calculator's no-backend, no-accounts scope; no storage mechanism is required.
 - The history holds the 20 most recent calculations; older entries are automatically
   discarded beyond that.
 - Clearing history does not require a confirmation step, consistent with the base
