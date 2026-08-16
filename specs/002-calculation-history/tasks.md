@@ -48,7 +48,9 @@ Extends the existing single frontend project from `001-web-calculator`. New file
 
 - [ ] T002 [P] Unit test `useHistory`: `addEntry` prepends newest-first and caps the list at
       20 entries (dropping the oldest once exceeded); `clear` empties the list and is a safe
-      no-op when already empty — in `tests/unit/ui/use-history.test.ts`, per
+      no-op when already empty; and a fresh call to `useHistory()` always starts with
+      `entries: []`, regardless of any prior hook instance (guards FR-014's no-persistence
+      requirement at the unit level) — in `tests/unit/ui/use-history.test.ts`, per
       `contracts/use-history-hook.md`.
 - [ ] T003 Implement the `useHistory` hook (`entries`, `addEntry`, `clear`) in
       `src/ui/useHistory.ts` to pass T002 (depends on T002).
@@ -131,7 +133,9 @@ operations proceed normally from that value.
 - [ ] T014 [P] [US2] Component test: selecting a history entry loads its result as the current
       entry and closes the panel; selecting one while another calculation is in progress
       replaces it; continuing to calculate (operator + number) from the reused value works
-      normally, in `tests/component/history-reuse.test.tsx`.
+      normally; and selecting an entry does not itself add a new history entry (entry count is
+      unchanged immediately before vs. after the selection, per FR-009), in
+      `tests/component/history-reuse.test.tsx`.
 
 ### Implementation for User Story 2
 
@@ -187,7 +191,12 @@ the list is immediately empty; confirm clearing again when already empty does no
       token palette holds ≥4.5:1 contrast; adjust `src/styles/tokens.css` /
       `src/styles/global.css` as needed. (Holistic pass on top of T012/T017/T021.)
 - [ ] T024 Walk through all 9 scenarios in `quickstart.md` against `npm run dev` and record the
-      results, including scenario 8 (no persistence across reload, no sharing across tabs).
+      results, including scenario 8 (no persistence across reload, no sharing across tabs), a
+      long-expression readability check (a history row for a calculation using
+      near-maximum-length operands, e.g. 12-digit numbers, must remain readable and not
+      overflow/clip), and a rapid-repeated-calculations check (completing several calculations
+      in quick succession must each appear as separate, correctly ordered entries with none
+      lost or duplicated).
 - [ ] T025 Verify `npm run build` completes with zero TypeScript errors, `npm run lint` passes
       cleanly, and `npm run test` passes with every suite green (existing `001-web-calculator`
       suite plus the new history tests).
@@ -202,9 +211,11 @@ the list is immediately empty; confirm clearing again when already empty does no
 - **Foundational (Phase 2)**: Depends on Setup — BLOCKS all user stories.
 - **User Story 1 (Phase 3)**: Depends on Foundational only.
 - **User Story 2 (Phase 4)**: Depends on Foundational; also functionally depends on history
-  having entries to select, which in practice come from US1's capture procedure — tests seed
-  entries via the `useHistory` hook directly rather than relying on US1's capture logic, so
-  the story remains independently testable even though it's implemented after US1.
+  having at least one entry to select. Following this project's black-box component-testing
+  convention (render `<Calculator/>`, interact via clicks), T014's test performs one or two
+  real calculations through the UI first to populate history, then exercises reuse — so US2's
+  test execution has a soft dependency on US1's capture logic already being implemented, which
+  the phase execution order already guarantees (US1 completes before US2 begins).
 - **User Story 3 (Phase 5)**: Depends on Foundational; its clear wiring is largely already in
   place from T011, so this phase is mostly verification.
 - **Polish (Phase 6)**: Depends on all three user stories being complete.
