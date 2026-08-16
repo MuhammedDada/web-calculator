@@ -1,0 +1,116 @@
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-page-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-4);
+}
+
+.calculator {
+  width: 100%;
+  max-width: 360px;
+  background: var(--color-surface-bg);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1), 0 1px 2px rgb(0 0 0 / 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.display {
+  background: var(--color-display-bg);
+  color: var(--color-display-text);
+  border-radius: var(--radius);
+  padding: var(--space-4) var(--space-3);
+  font-size: var(--font-size-display);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  overflow-wrap: break-word;
+  word-break: break-all;
+  min-height: 3.5em;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.display[data-error="true"] {
+  color: var(--color-error-text);
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-2);
+}
+
+.btn {
+  border: none;
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  font-family: inherit;
+  font-size: var(--font-size-button);
+  cursor: pointer;
+  min-height: 3rem;
+  min-width: 44px;
+  touch-action: manipulation;
+}
+
+.btn-digit {
+  background: var(--color-digit-bg);
+  color: var(--color-digit-text);
+}
+.btn-digit:hover {
+  background: var(--color-digit-bg-hover);
+}
+
+.btn-operator {
+  background: var(--color-operator-bg);
+  color: var(--color-operator-text);
+}
+.btn-operator:hover {
+  background: var(--color-operator-bg-hover);
+}
+
+.btn-action {
+  background: var(--color-action-bg);
+  color: var(--color-action-text);
+}
+.btn-action:hover {
+  background: var(--color-action-bg-hover);
+}
+
+.btn-equals {
+  background: var(--color-equals-bg);
+  color: var(--color-equals-text);
+}
+.btn-equals:hover {
+  background: var(--color-equals-bg-hover);
+}
+
+.btn-equals-wide {
+  grid-column: span 4;
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
