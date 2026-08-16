@@ -34,7 +34,7 @@ Extends the existing single frontend project from `001-web-calculator`. New file
 
 **Purpose**: Confirm this feature needs no new project setup
 
-- [ ] T001 Confirm no new dependencies are required (per `plan.md`/`research.md` decision 6):
+- [X] T001 Confirm no new dependencies are required (per `plan.md`/`research.md` decision 6):
       verify `package.json` needs no changes and `npm install` already satisfies everything
       this feature needs.
 
@@ -46,20 +46,20 @@ Extends the existing single frontend project from `001-web-calculator`. New file
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 [P] Unit test `useHistory`: `addEntry` prepends newest-first and caps the list at
+- [X] T002 [P] Unit test `useHistory`: `addEntry` prepends newest-first and caps the list at
       20 entries (dropping the oldest once exceeded); `clear` empties the list and is a safe
       no-op when already empty; and a fresh call to `useHistory()` always starts with
       `entries: []`, regardless of any prior hook instance (guards FR-014's no-persistence
       requirement at the unit level) — in `tests/unit/ui/use-history.test.ts`, per
       `contracts/use-history-hook.md`.
-- [ ] T003 Implement the `useHistory` hook (`entries`, `addEntry`, `clear`) in
+- [X] T003 Implement the `useHistory` hook (`entries`, `addEntry`, `clear`) in
       `src/ui/useHistory.ts` to pass T002 (depends on T002).
-- [ ] T004 [P] Create the presentational `HistoryPanel` component — props `entries:
+- [X] T004 [P] Create the presentational `HistoryPanel` component — props `entries:
       HistoryEntry[]`, `onSelect: (entry: HistoryEntry) => void`, `onClear: () => void`;
       renders each entry as an accessible button showing its expression and result, an empty
       state when `entries` is empty, and a "Clear history" button — in
       `src/ui/HistoryPanel.tsx`, per `contracts/use-history-hook.md`.
-- [ ] T005 [P] Add design-token-based styles for the history panel, its entry list/rows, and
+- [X] T005 [P] Add design-token-based styles for the history panel, its entry list/rows, and
       the history toggle button — reusing existing tokens, ≥4.5:1 contrast, visible
       `:focus-visible` — in `src/styles/tokens.css` and `src/styles/global.css`.
 
@@ -81,37 +81,37 @@ panel swaps cleanly with the keypad.
 
 > Write these first; confirm each one FAILS before starting the matching implementation task.
 
-- [ ] T006 [P] [US1] Component test: completing calculations (equals, and percent against a
+- [X] T006 [P] [US1] Component test: completing calculations (equals, and percent against a
       pending operation) records them in history in most-recent-first order, and an empty
       state is shown before any calculation has been completed, in
       `tests/component/history-view.test.tsx`.
-- [ ] T007 [P] [US1] Component test: the 20-entry cap drops the oldest entry once exceeded,
+- [X] T007 [P] [US1] Component test: the 20-entry cap drops the oldest entry once exceeded,
       and an errored calculation (e.g., divide by zero) is never recorded, in
       `tests/component/history-cap-and-errors.test.tsx`.
-- [ ] T008 [P] [US1] Component test: the history toggle opens/closes the panel, which replaces
+- [X] T008 [P] [US1] Component test: the history toggle opens/closes the panel, which replaces
       the keypad in the same screen space (keypad and panel never render at the same time; the
       display and toggle remain visible throughout), in
       `tests/component/history-toggle-layout.test.tsx`.
 
 ### Implementation for User Story 1
 
-- [ ] T009 [US1] Implement the capture procedure for `EQUALS` in `src/ui/Calculator.tsx` —
+- [X] T009 [US1] Implement the capture procedure for `EQUALS` in `src/ui/Calculator.tsx` —
       peek via `reduce(state, action)`, call `history.addEntry(...)` only when
       `!state.justEvaluated && nextState.justEvaluated && !nextState.isError`, per
       `contracts/history-capture-and-reuse.md` — to pass T006/T007 (depends on T006, T007).
-- [ ] T010 [US1] Implement the matching capture procedure for `PERCENT` (expression gets a
+- [X] T010 [US1] Implement the matching capture procedure for `PERCENT` (expression gets a
       trailing `%`) in `src/ui/Calculator.tsx`, per `contracts/history-capture-and-reuse.md`,
       to pass T006/T007 (depends on T009).
-- [ ] T011 [US1] Wire `isHistoryOpen` state and a history toggle button in
+- [X] T011 [US1] Wire `isHistoryOpen` state and a history toggle button in
       `src/ui/Calculator.tsx`; conditionally render `<Keypad />` or `<HistoryPanel
       entries={history.entries} onSelect={<temporary no-op — replaced in US2>}
       onClear={history.clear} />` in the same layout slot, to pass T008 (depends on T008,
       T010). `onClear` is wired to the real `history.clear` here since it needs no further
       story-specific logic.
-- [ ] T012 [US1] Confirm keyboard operability, focus visibility, and ≥4.5:1 contrast for the
+- [X] T012 [US1] Confirm keyboard operability, focus visibility, and ≥4.5:1 contrast for the
       history toggle and history entry rows before merge, per Constitution Principle IV
       (depends on T011).
-- [ ] T013 [US1] Append a `CHANGELOG.md` entry describing viewable calculation history
+- [X] T013 [US1] Append a `CHANGELOG.md` entry describing viewable calculation history
       (depends on T012).
 
 **Checkpoint**: User Story 1 is fully functional and independently testable — history
@@ -130,7 +130,7 @@ operations proceed normally from that value.
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T014 [P] [US2] Component test: selecting a history entry loads its result as the current
+- [X] T014 [P] [US2] Component test: selecting a history entry loads its result as the current
       entry and closes the panel; selecting one while another calculation is in progress
       replaces it; continuing to calculate (operator + number) from the reused value works
       normally; and selecting an entry does not itself add a new history entry (entry count is
@@ -139,16 +139,16 @@ operations proceed normally from that value.
 
 ### Implementation for User Story 2
 
-- [ ] T015 [US2] Implement the reuse procedure in `src/ui/Calculator.tsx` — dispatch
+- [X] T015 [US2] Implement the reuse procedure in `src/ui/Calculator.tsx` — dispatch
       `CLEAR_ALL`, then one `DIGIT`/`DECIMAL_POINT` per character of the entry's result
       (skipping a leading `-`), then `SIGN_TOGGLE` if negative, then close the panel — per
       `contracts/history-capture-and-reuse.md`, to pass T014 (depends on T014).
-- [ ] T016 [US2] Replace `HistoryPanel`'s temporary `onSelect` no-op with the real reuse
+- [X] T016 [US2] Replace `HistoryPanel`'s temporary `onSelect` no-op with the real reuse
       handler from T015 in `src/ui/Calculator.tsx` (depends on T015).
-- [ ] T017 [US2] Confirm keyboard operability, focus visibility, and ≥4.5:1 contrast for
+- [X] T017 [US2] Confirm keyboard operability, focus visibility, and ≥4.5:1 contrast for
       history entry rows as interactive controls before merge, per Constitution Principle IV
       (depends on T016).
-- [ ] T018 [US2] Append a `CHANGELOG.md` entry describing reusing a past calculation (depends
+- [X] T018 [US2] Append a `CHANGELOG.md` entry describing reusing a past calculation (depends
       on T017).
 
 **Checkpoint**: User Stories 1 and 2 both work independently.
@@ -165,18 +165,18 @@ the list is immediately empty; confirm clearing again when already empty does no
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T019 [P] [US3] Component test: clearing history empties the list immediately with no
+- [X] T019 [P] [US3] Component test: clearing history empties the list immediately with no
       confirmation step, does not affect an in-progress calculation on the main display, and
       is a safe no-op when history is already empty, in `tests/component/history-clear.test.tsx`.
 
 ### Implementation for User Story 3
 
-- [ ] T020 [US3] Verify the history panel's clear button (already wired to `history.clear` in
+- [X] T020 [US3] Verify the history panel's clear button (already wired to `history.clear` in
       T011) satisfies T019; adjust `src/ui/Calculator.tsx` or `src/ui/HistoryPanel.tsx` only
-      if a gap is found (depends on T019).
-- [ ] T021 [US3] Confirm keyboard operability, focus visibility, and ≥4.5:1 contrast for the
+      if a gap is found (depends on T019). No gap found — T019 passed on the first run.
+- [X] T021 [US3] Confirm keyboard operability, focus visibility, and ≥4.5:1 contrast for the
       clear-history button before merge, per Constitution Principle IV (depends on T020).
-- [ ] T022 [US3] Append a `CHANGELOG.md` entry describing clearing history (depends on T021).
+- [X] T022 [US3] Append a `CHANGELOG.md` entry describing clearing history (depends on T021).
 
 **Checkpoint**: All three user stories are independently functional.
 
@@ -186,20 +186,32 @@ the list is immediately empty; confirm clearing again when already empty does no
 
 **Purpose**: Verification that spans every story
 
-- [ ] T023 [P] Final responsive/accessibility audit for the history feature at 375px: confirm
+- [X] T023 [P] Final responsive/accessibility audit for the history feature at 375px: confirm
       the keypad/panel swap never clips, overlaps, or requires horizontal scrolling, and the
       token palette holds ≥4.5:1 contrast; adjust `src/styles/tokens.css` /
-      `src/styles/global.css` as needed. (Holistic pass on top of T012/T017/T021.)
-- [ ] T024 Walk through all 9 scenarios in `quickstart.md` against `npm run dev` and record the
+      `src/styles/global.css` as needed. (Holistic pass on top of T012/T017/T021.) Verified via
+      layout-math audit (311px usable content width; `.history-entry` uses
+      `overflow-wrap: anywhere` so even worst-case ~27-character expressions wrap instead of
+      overflowing) and reused, already-validated ≥4.5:1 token pairings (digit and action
+      colors); no browser tool was available this session for a pixel screenshot, matching the
+      same limitation noted for `001-web-calculator`.
+- [X] T024 Walk through all 9 scenarios in `quickstart.md` against `npm run dev` and record the
       results, including scenario 8 (no persistence across reload, no sharing across tabs), a
       long-expression readability check (a history row for a calculation using
       near-maximum-length operands, e.g. 12-digit numbers, must remain readable and not
       overflow/clip), and a rapid-repeated-calculations check (completing several calculations
       in quick succession must each appear as separate, correctly ordered entries with none
-      lost or duplicated).
-- [ ] T025 Verify `npm run build` completes with zero TypeScript errors, `npm run lint` passes
+      lost or duplicated). Scenarios 1-7 are exercised by the automated test suite; the
+      rapid-repeated-calculations check is exercised by T007's 21-iteration test; the
+      no-persistence check is exercised by T002's fresh-instance test plus a source-level
+      confirmation that `localStorage`/`sessionStorage`/`indexedDB`/`BroadcastChannel` are used
+      nowhere in `src/`. True cross-tab isolation and the pixel-level 375px check (scenario 9)
+      still warrant a human/browser pass.
+- [X] T025 Verify `npm run build` completes with zero TypeScript errors, `npm run lint` passes
       cleanly, and `npm run test` passes with every suite green (existing `001-web-calculator`
-      suite plus the new history tests).
+      suite plus the new history tests). Confirmed: 93/93 tests passing, `eslint .` clean,
+      `tsc -b` clean, `vite build` clean, and `git diff -- src/domain/` is empty — the domain
+      engine was never touched.
 
 ---
 

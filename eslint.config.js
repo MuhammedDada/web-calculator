@@ -6,7 +6,7 @@ import jsxA11y from "eslint-plugin-jsx-a11y";
 import globals from "globals";
 
 export default tseslint.config(
-  { ignores: ["dist/", "node_modules/", "coverage/", "*.tsbuildinfo"] },
+  { ignores: ["dist/", "node_modules/", ".vite/", "coverage/", "*.tsbuildinfo"] },
   js.configs.recommended,
   ...tseslint.configs.strict,
   ...tseslint.configs.stylistic,

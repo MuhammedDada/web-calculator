@@ -114,3 +114,77 @@ body {
   outline: 3px solid var(--color-focus-ring);
   outline-offset: 2px;
 }
+
+.toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.history-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 14rem;
+}
+
+.history-panel-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.history-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  text-align: center;
+  margin: 0;
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  max-height: 14rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.history-entry {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border: none;
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-digit-bg);
+  color: var(--color-digit-text);
+  font-family: inherit;
+  cursor: pointer;
+  min-height: 44px;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.history-entry:hover {
+  background: var(--color-digit-bg-hover);
+}
+
+.history-entry:focus-visible {
+  outline: 3px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.history-entry-expression {
+  font-size: 0.875rem;
+}
+
+.history-entry-result {
+  font-size: 1.125rem;
+  font-weight: 600;
+}
